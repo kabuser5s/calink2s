@@ -5,7 +5,7 @@ const fs = require('fs');
 const nodemailer = require('nodemailer');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Permet à Express de remonter l'IP réelle quand l'app est derrière un proxy
 // (Nginx, Cloudflare, hébergeur PaaS, etc.).
@@ -25,38 +25,99 @@ const smtpCfg = {
 
 const views = path.join(__dirname, 'views');
 
-const ALLOWED_COUNTRIES = ['FR', 'CI'];
+const ALLOWED_COUNTRIES = (process.env.ALLOWED_COUNTRIES || 'FR,CI')
+  .split(',')
+  .map((c) => c.trim())
+  .filter(Boolean);
+
+const TRUSTED_IP_HEADERS = [
+  'cf-connecting-ip',
+  'x-vercel-forwarded-for',
+  'x-real-ip',
+  'x-forwarded-for',
+  'x-client-ip',
+  'x-forwarded',
+];
+
+function normalizeIp(rawIp) {
+  if (!rawIp) return '';
+  let ip = String(rawIp).trim();
+
+  if (!ip || ip.toLowerCase() === 'unknown' || ip.toLowerCase() === 'null') return '';
+
+  if (ip.startsWith('for=')) {
+    ip = ip.slice(4);
+  }
+
+  if (ip.startsWith('"') && ip.endsWith('"')) {
+    ip = ip.slice(1, -1);
+  }
+
+  if (ip.startsWith('[')) {
+    ip = ip.replace(/^\[/, '').replace(/\](?::\d+)?$/, '');
+  } else if (/^\d+\.\d+\.\d+\.\d+:\d+$/.test(ip)) {
+    ip = ip.split(':')[0];
+  }
+
+  return ip.replace(/%.+$/, '');
+}
+
+function getIpCandidates(req) {
+  const candidates = [];
+
+  TRUSTED_IP_HEADERS.forEach((headerName) => {
+    const value = req.headers[headerName];
+    if (!value) return;
+    const values = Array.isArray(value) ? value : String(value).split(',');
+    values.forEach((item) => {
+      const ip = normalizeIp(item);
+      if (ip) candidates.push(ip);
+    });
+  });
+
+  const directCandidates = [req.ip, req.socket?.remoteAddress, req.connection?.remoteAddress];
+  directCandidates.forEach((candidate) => {
+    const ip = normalizeIp(candidate);
+    if (ip) candidates.push(ip);
+  });
+
+  return candidates;
+}
 
 function getClientIp(req) {
-    const candidates = [
-        req.headers['cf-connecting-ip'],
-        req.headers['x-real-ip'],
-        req.headers['x-forwarded-for'] && req.headers['x-forwarded-for'].split(',')[0].trim(),
-        req.ip,
-        req.socket.remoteAddress,
-    ];
+    const candidates = getIpCandidates(req);
+    let fallbackPrivateIp = null;
 
     for (const ip of candidates) {
-        if (ip) return ip;
+        if (isPrivateIp(ip)) {
+            if (!fallbackPrivateIp) fallbackPrivateIp = ip;
+            continue;
+        }
+        return ip;
     }
 
-    return null;
+    return fallbackPrivateIp;
 }
 
 function isPrivateIp(ip) {
-    if (!ip) return true;
+    if (!ip) return false;
     const clean = ip.replace(/^::ffff:/, '');
     return (
         clean === '::1' ||
         clean.startsWith('127.') ||
         clean.startsWith('192.168.') ||
         clean.startsWith('10.') ||
+        clean === 'localhost' ||
         /^172\.(1[6-9]|2\d|3[01])\./.test(clean)
     );
 }
 
 function checkCountry(ip) {
     return new Promise((resolve) => {
+        if (!ip) {
+            console.log('[GEO] Impossible de déterminer l\'IP client.');
+            return resolve(false);
+        }
         if (isPrivateIp(ip)) {
             console.log(`[GEO] IP privée/locale détectée : ${ip} → autorisé`);
             return resolve(true);
@@ -93,6 +154,7 @@ function checkCountry(ip) {
 
 async function geoBlock(req, res, next) {
     const ip = getClientIp(req);
+    console.log(`[GEO] IP résolue: ${ip || 'inconnue'}`);
     console.log(`[GEO] Headers reçus — cf-connecting-ip: ${req.headers['cf-connecting-ip']} | x-real-ip: ${req.headers['x-real-ip']} | x-forwarded-for: ${req.headers['x-forwarded-for']} | socket: ${req.socket.remoteAddress}`);
     const allowed = await checkCountry(ip);
     if (!allowed) return res.status(403).send('Accès non autorisé depuis votre région.');
@@ -165,6 +227,10 @@ app.post('/api/send-email', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Serveur démarré sur http://localhost:${PORT}`);
-});
+if (process.env.VERCEL !== '1' && require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Serveur démarré sur http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
