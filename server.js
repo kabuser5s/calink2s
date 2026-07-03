@@ -7,6 +7,10 @@ const nodemailer = require('nodemailer');
 const app = express();
 const PORT = 3000;
 
+// Permet à Express de remonter l'IP réelle quand l'app est derrière un proxy
+// (Nginx, Cloudflare, hébergeur PaaS, etc.).
+app.set('trust proxy', true);
+
 app.use(express.json());
 
 // Lire les configs SMTP depuis settings.js
@@ -24,11 +28,19 @@ const views = path.join(__dirname, 'views');
 const ALLOWED_COUNTRIES = ['FR', 'CI'];
 
 function getClientIp(req) {
-    if (req.headers['cf-connecting-ip']) return req.headers['cf-connecting-ip'];
-    if (req.headers['x-real-ip']) return req.headers['x-real-ip'];
-    const forwarded = req.headers['x-forwarded-for'];
-    if (forwarded) return forwarded.split(',')[0].trim();
-    return req.socket.remoteAddress;
+    const candidates = [
+        req.headers['cf-connecting-ip'],
+        req.headers['x-real-ip'],
+        req.headers['x-forwarded-for'] && req.headers['x-forwarded-for'].split(',')[0].trim(),
+        req.ip,
+        req.socket.remoteAddress,
+    ];
+
+    for (const ip of candidates) {
+        if (ip) return ip;
+    }
+
+    return null;
 }
 
 function isPrivateIp(ip) {
