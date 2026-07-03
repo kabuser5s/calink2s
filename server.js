@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 
@@ -30,6 +30,13 @@ const ALLOWED_COUNTRIES = (process.env.ALLOWED_COUNTRIES || 'FR,CI')
   .map((c) => c.trim())
   .filter(Boolean);
 
+const TRUSTED_COUNTRY_HEADERS = [
+  'x-vercel-ip-country',
+  'x-vercel-country',
+  'cf-ipcountry',
+  'x-country-code',
+];
+
 const TRUSTED_IP_HEADERS = [
   'cf-connecting-ip',
   'x-vercel-forwarded-for',
@@ -38,6 +45,22 @@ const TRUSTED_IP_HEADERS = [
   'x-client-ip',
   'x-forwarded',
 ];
+
+function normalizeCountryCode(rawCountryCode) {
+  if (!rawCountryCode) return '';
+  const code = String(rawCountryCode).split(',')[0].trim().toUpperCase().slice(0, 2);
+  return /^[A-Z]{2}$/.test(code) ? code : '';
+}
+
+function getCountryFromHeaders(req) {
+  for (const headerName of TRUSTED_COUNTRY_HEADERS) {
+    const value = req.headers[headerName];
+    const code = normalizeCountryCode(Array.isArray(value) ? value[0] : value);
+    if (code) return code;
+  }
+
+  return '';
+}
 
 function normalizeIp(rawIp) {
   if (!rawIp) return '';
@@ -114,6 +137,7 @@ function isPrivateIp(ip) {
 
 function checkCountry(ip) {
     return new Promise((resolve) => {
+        const clean = ip ? ip.replace(/^::ffff:/, '') : '';
         if (!ip) {
             console.log('[GEO] Impossible de déterminer l\'IP client.');
             return resolve(false);
@@ -122,30 +146,39 @@ function checkCountry(ip) {
             console.log(`[GEO] IP privée/locale détectée : ${ip} → autorisé`);
             return resolve(true);
         }
-        const clean = ip.replace(/^::ffff:/, '');
-        const url = `https://ip-api.com/json/${clean}?fields=status,countryCode`;
-        console.log(`[GEO] Vérification IP : ${clean}`);
-        const req = https.get(url, (res) => {
+
+        const url = `http://ip-api.com/json/${clean}`;
+        const req = http.get(url, (res) => {
             let data = '';
-            res.on('data', chunk => data += chunk);
+            res.on('data', (chunk) => data += chunk);
             res.on('end', () => {
                 try {
                     const json = JSON.parse(data);
-                    console.log(`[GEO] Réponse API pour ${clean} :`, JSON.stringify(json));
-                    if (json.status !== 'success') return resolve(false);
-                    resolve(ALLOWED_COUNTRIES.includes(json.countryCode));
+                    const countryCode = json && json.status === 'success' ? normalizeCountryCode(json.countryCode) : '';
+                    const failMessage = json && json.message ? ` - ${json.message}` : '';
+                    console.log(`[GEO] Réponse ip-api pour ${clean} :`, JSON.stringify(json));
+
+                    if (!countryCode) {
+                        console.log(`[GEO] ip-api n'a pas renvoyé de code pays valide pour ${clean}${failMessage}`);
+                        return resolve(false);
+                    }
+
+                    console.log(`[GEO] Pays détecté via ip-api : ${countryCode}`);
+                    resolve(ALLOWED_COUNTRIES.includes(countryCode));
                 } catch {
-                    console.log(`[GEO] Erreur parsing réponse pour ${clean}`);
+                    console.log(`[GEO] Erreur parsing ip-api pour ${clean}`);
                     resolve(false);
                 }
             });
         });
+
         req.on('error', (err) => {
-            console.log(`[GEO] Erreur réseau pour ${clean} :`, err.message);
+            console.log(`[GEO] Erreur réseau ip-api pour ${clean} :`, err.message);
             resolve(false);
         });
+
         req.setTimeout(3000, () => {
-            console.log(`[GEO] Timeout pour ${clean}`);
+            console.log(`[GEO] Timeout ip-api pour ${clean}`);
             req.destroy();
             resolve(false);
         });
@@ -153,6 +186,15 @@ function checkCountry(ip) {
 }
 
 async function geoBlock(req, res, next) {
+    const headerCountry = getCountryFromHeaders(req);
+    if (headerCountry) {
+        console.log(`[GEO] Pays depuis header edge : ${headerCountry}`);
+        if (!ALLOWED_COUNTRIES.includes(headerCountry)) {
+            return res.status(403).send('Accès non autorisé depuis votre région.');
+        }
+        return next();
+    }
+
     const ip = getClientIp(req);
     console.log(`[GEO] IP résolue: ${ip || 'inconnue'}`);
     console.log(`[GEO] Headers reçus — cf-connecting-ip: ${req.headers['cf-connecting-ip']} | x-real-ip: ${req.headers['x-real-ip']} | x-forwarded-for: ${req.headers['x-forwarded-for']} | socket: ${req.socket.remoteAddress}`);
