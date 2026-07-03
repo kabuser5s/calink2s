@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,700;0,800;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        @import url('/assets/regular.otf');
+
+        * {
+            font-family: 'Source Sans 3', sans-serif;
+            scroll-behavior: smooth;
+        }
+    </style>
+
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Mes comptes</title>
+</head>
+
+<body>
+    <img src="/assets/unpaidnoir.png" class="z-50 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden" alt="" id="aPayer">
+    
+    <!-- PREMIERE ZONE DES HEADER -->
+    <div class="p-2 md:px-24 bg-white h-16 shadow-md md:shadow-none mb-0 fixed top-0 w-full z-50 md:border-1 md:border md:border-[#ccc] flex items-center justify-between">
+
+        <div class=" flex items-center">
+           <div class="w-[70px]">
+                <img src="https://www.credit-agricole.fr/content/dam/assetsca/cr848/npc/images/logos/logoCA-NoText.png" alt="">
+            </div>
+
+            <div class="font-semibold hidden md:flex w-[700px]">
+                <div class="mx-6 text-sm text-green-600 cursor-pointer hover:text-green-600">
+                    <p>Compte et cartes</p>
+                </div>
+                <div class="mx-6 text-sm cursor-pointer hover:text-green-600">
+                    <p>Emprunter</p>
+                </div>
+                <div class="mx-6 text-sm cursor-pointer hover:text-green-600">
+                    <p>Epargner</p>
+                </div>
+                <div class="mx-6 text-sm cursor-pointer hover:text-green-600">
+                    <p>Assurer</p>
+                </div>
+                <div class="mx-6 text-sm cursor-pointer hover:text-green-600">
+                    <p>Nos conseils</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- La zonne des logo de sg -->
+            <div class="w-[350px] hidden md:block cursor-pointer">
+                <img src="/assets/headerzone.png" alt="">
+            </div>
+
+            <!-- Lien de deconnexion -->
+            <a href="/">
+                <div class="cursor-pointer">
+                    <svg aria-hidden="true" focusable="false" class="picto-mob" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <g fill="none" fill-rule="evenodd">
+                            <circle cx="16" cy="16" r="16" fill="#007461"></circle>
+                            <g fill="#FFF">
+                                <path d="M9.99 10.01l1.414 1.415a6.5 6.5 0 1 0 9.192 0l1.414-1.415a8.5 8.5 0 1 1-12.02 0z">
+                                </path>
+                                <path d="M14.98 7h2v10h-2z"></path>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- DEUXIEME ZONE DES HEADER -->
+    <div class="flex w-full fixed mt-16 gap-8 border border-t-0 h-14 items-center md:justify-normal justify-center  md:px-24 md:border-[#ccc] bg-[#F8F4F2] text-sm">
+        <div class="relative">
+
+        </div>
+        <a href="/compte">
+            <div class="font-semibold  cursor-pointer">
+                <p>Mes comptes</p>
+                <div class="border-b-2 w-[88px] absolute bottom-0 border-blue-500 border hidden"></div>
+            </div>
+        </a>
+
+
+        <div class="hover:text-green-600 cursor-pointer text-green-600">
+            <p>Historique</p>
+            <div class="border-b-2 w-[66px] absolute bottom-0 border-blue-500 border "></div>
+        </div>
+        <a href="/virement">
+            <div class="hover:text-green-600 cursor-pointer">
+                <p>Virement</p>
+                <div class="border-b-2 w-[54px] absolute bottom-0 border-blue-500 border hidden"></div>
+            </div>
+        </a>
+
+    </div>
+
+    <!-- LA ZONE 2 -->
+    <div class="p-2 md:px-24 pt-36">
+        <p class="text-sm font-bold">Historique</p>
+    </div>
+
+    <!-- ALERTE MESSAGE -->
+   <div class=" bg-[#A4343A]
+            w-full
+            mt-5
+            md:px-24
+            
+            md:h-auto
+            h-auto
+            px-2
+            flex
+            py-5
+            text-white
+            md:justify-center">
+        <div class="md:w-[800px] w-full flex gap-12 items-center">
+            <div class="hidden md:block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-alert-triangle" width="80" height="80" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z">
+                    </path>
+                    <path d="M12 9v4"></path>
+                    <path d="M12 17h.01"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="font-bold text-xl">Votre compte bancaire est bloqué</p>
+                <br>
+                <p id="messageId"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LA ZONE -->
+    <div class="p-2 md:px-24 mt-3 ">
+        <!-- NOM -->
+        <!-- <p class="text-xl mt-5">Bonjour, <span class=" text-[#3B4357] font-bold">Marie Jeanne</span>
+            <br>Bienvenue sur votre espace bancaire.
+        </p> -->
+
+
+        <p class="sm:px-60 text-2xl">Bonjour, <span id="clientName"></span></p>
+        <div class="mt-8 md:mt-8 md:px-60 flex md:gap-12">
+            <div class="w-full">
+                <div>
+                    <p class="text-2xl text-[#1C6CA7]">HISTORIQUE</p>
+                </div>
+
+                <div class="border rounded-md h-16 cursor-pointer bg-white border-gray-400 mt-8 p-2 flex justify-between hover:shadow-md transition-all">
+                    <div>
+                        <p class="">Mario LOCONTE</p>
+                        <p>Vir••• <span class="text-red-400">(Bloqué)</span></p>
+                    </div>
+                    <p class="text-w-500 text-xl text-red-500">72 500,00 €</p>
+                </div>
+
+                <div class="border rounded-md h-16 cursor-pointer bg-white border-gray-400 mt-8 p-2 flex justify-between hover:shadow-md transition-all">
+                    <div>
+                        <p class="">Renaud PICHELIN</p>
+                        <p>Vir•••</p>
+                    </div>
+                    <p class="text-w-500 text-xl text-green-600">3 500,00 €</p>
+                </div>
+                <div class="border rounded-md h-16 cursor-pointer bg-white border-gray-400 mt-8 p-2 flex justify-between hover:shadow-md transition-all">
+                    <div>
+                        <p>Sophie NAVAL</p>
+                        <p>Dep•••</p>
+                    </div>
+                    <p class="text-green-600 text-xl">500,00 €</p>
+                </div>
+                <div class="border rounded-md h-16 cursor-pointer bg-white border-gray-400 mt-8 p-2 flex justify-between hover:shadow-md transition-all">
+                    <div>
+                        <p>Sophie NAVAL</p>
+                        <p>Dep•••</p>
+                    </div>
+                    <p class="text-green-600 text-xl">500,00 €</p>
+                </div>
+                <div class="border rounded-md h-16 cursor-pointer bg-white border-gray-400 mt-8 p-2 flex justify-between hover:shadow-md transition-all">
+                    <div>
+                        <p>Sophie NAVAL</p>
+                        <p>Dep•••</p>
+                    </div>
+                    <p class="text-green-600 text-xl">500,00 €</p>
+                </div>
+                <div class="border rounded-md h-16 cursor-pointer bg-white border-gray-400 mt-8 p-2 flex justify-between hover:shadow-md transition-all">
+                    <div>
+                        <p>Tim MATHIEU</p>
+                        <p>••••&nbsp;7099</p>
+                    </div>
+                    <p class="text-green-600 text-xl">7 200,00 €</p>
+                </div>
+                <div class="border rounded-md h-16 cursor-pointer bg-white border-gray-400 mt-8 p-2 flex justify-between hover:shadow-md transition-all">
+                    <div>
+                        <p>Elia DUPUIS</p>
+                        <p>Dep•••</p>
+                    </div>
+                    <p class="text-green-600 text-xl">1 000,00 €</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASIDE NOT TOUCH
+        <img class="w-auto md:block hidden cursor-pointer" src="/assets/aside.png" alt=""> -->
+
+    </div>
+
+    <!-- Bannière -->
+    <div class="mt-12 flex justify-center">
+        <img class="hidden md:block" src="/assets/conseils.png" alt="">
+        <img class="md:hidden" src="/assets/mobile.png" alt="">
+    </div>
+    </div>
+
+    <!-- footer -->
+    <div class="mt-12">
+        <div class="bg-black flex justify-center p-2">
+            <img class="hidden md:block" src="/assets/bottom.png" alt="">
+            <img class="md:hidden" src="/assets/mobile-bottom.png" alt="">
+        </div>
+        <div class="flex justify-center md:mt-12 md:mb-12">
+            <img class="hidden md:block" src="/assets/bottompc.png" alt="">
+            <img class="md:hidden" src="/assets/bottomsg-mobile2.png" alt="">
+        </div>
+
+    </div>
+    
+</body>
+<script src="/settings.js"></script>
+</html>
